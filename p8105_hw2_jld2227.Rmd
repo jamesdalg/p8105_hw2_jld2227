@@ -10,7 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 ## Problem 1
-Instructions: "Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful)."
+Instructions(I'm choosing to include these to make it a bit easier to grade):
+"Read and clean the data; retain line, station, name, station latitude / 
+longitude, routes served, entry, vending, entrance type, and ADA compliance.
+Convert the entry variable from character (YES vs NO) to a logical variable
+(the ifelse or recode function may be useful)."
 ```{r data_import}
 subway_data = read_csv("./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
   janitor::clean_names() %>% 
@@ -20,3 +24,50 @@ subway_data = read_csv("./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv
 subway_data 
 ```
 
+Instruction: "Write a short paragraph about this dataset – 
+explain briefly what variables the dataset contains, 
+describe your data cleaning steps so far,
+and give the dimension (rows x columns) of the resulting dataset.
+Are these data tidy?"
+
+Essentially, the dataset contains two character variables dening the subway line and station,
+two numeric (double) variables denoting geolocation (latitude and longitude),
+11 variables denoting the routes (mostly populated with missing values) in a wide format,
+two logical TRUE/FALSE variables for entry and ada,
+and a character variable with values "YES" and "NO" variable for vending.
+The data is not tidy for at least the reasons that routes are in a wide format 
+where the route is encoded in the column. This can be remedied with the 
+gather function. As we'll see below, route1 was been encoded in
+mixed case(see the "E" and "e"?),
+which may mess up some downstream analysis as well.
+
+The dataset contains `r nrow(subway_data)` rows and `r ncol(subway_data)`
+columns. Data cleaning included reading the data into a tibble, 
+selecting the necessary columns, converting the column names 
+into a standard format, and converting the entry variable into a logical column.
+```{r describe}
+skimr::skim(subway_data)
+sapply(subway_data,table)
+subway_data %>% 
+  select(starts_with("route")) %>%
+  sapply(.,table)
+```
+ Putting the wide format into long could aid analysis and can be done with a simple gather command.
+```{r wide_to_long}
+subway_data_long = subway_data %>% 
+  gather(key = "route_number",value = "train",route1:route11)
+```
+
+Instruction: "Answer the following questions using these data:
+
+How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here."
+"
+We'll now select the columns of interest and limit to only the distinct rows,
+then count the number of distinct rows containing route number and train
+combinations.
+```{r distinct_stations}
+subway_routes_trains <- subway_data_long %>% select("route_number","train") %>% distinct()
+subway_routes_trains
+nrow(subway_routes_trains)
+```
+There happen to be `nrow(subway_routes_trains)` distinct stations, according to the data.
