@@ -60,14 +60,23 @@ subway_data_long = subway_data %>%
 
 Instruction: "Answer the following questions using these data:
 
-How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here."
-"
+How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
+How many stations are ADA compliant?
+What proportion of station entrances / exits without vending allow entrance?"
+
 We'll now select the columns of interest and limit to only the distinct rows,
 then count the number of distinct rows containing route number and train
 combinations.
 ```{r distinct_stations}
-subway_routes_trains <- subway_data_long %>% select("route_number","train") %>% distinct()
+subway_routes_trains <- subway_data_long %>% select("route_number","train", "ada","entry") %>% distinct()
 subway_routes_trains
 nrow(subway_routes_trains)
 ```
 There happen to be `nrow(subway_routes_trains)` distinct stations, according to the data.
+
+# Ada compliance (recheck ths to make sure  that the problem is still correct).
+We will create an additional variable-- station ada compliant. There can be multiple entrances, only some of which are ada compliant. A station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant. Not all entrances need have an elevator.
+# Without vending and allow entry.
+
+Reformat data so that route number and route name are distinct variables. 
+How many distinct stations serve the A train? How many are ADA compliant?
