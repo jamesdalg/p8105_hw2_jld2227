@@ -46,11 +46,11 @@ columns. Data cleaning included reading the data into a tibble,
 selecting the necessary columns, converting the column names 
 into a standard format, and converting the entry variable into a logical column.
 ```{r describe}
-skimr::skim(subway_data)
-sapply(subway_data,table)
+skimr::skim( subway_data )
+sapply(subway_data, table)
 subway_data %>% 
-  select(starts_with("route")) %>%
-  sapply(.,table)
+  select(starts_with( "route" )) %>%
+  sapply(., table)
 ```
  Putting the wide format into long could aid analysis and can be done with a simple gather command.
 ```{r wide_to_long}
@@ -68,15 +68,57 @@ We'll now select the columns of interest and limit to only the distinct rows,
 then count the number of distinct rows containing route number and train
 combinations.
 ```{r distinct_stations}
-subway_routes_trains <- subway_data_long %>% select("route_number","train", "ada","entry") %>% distinct()
+subway_routes_trains <- subway_data_long %>%
+  select("route_number", "train") %>%
+  distinct() %>% 
+  na.omit() %>% 
+  arrange(route_number,train)
 subway_routes_trains
 nrow(subway_routes_trains)
 ```
 There happen to be `nrow(subway_routes_trains)` distinct stations, according to the data.
 
-# Ada compliance (recheck ths to make sure  that the problem is still correct).
-We will create an additional variable-- station ada compliant. There can be multiple entrances, only some of which are ada compliant. A station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant. Not all entrances need have an elevator.
-# Without vending and allow entry.
+# Ada compliance
+We will create an additional variable denoting if the station ada is compliant. There can be multiple entrances, only some of which are ada compliant. As a simple rule, a station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant. 
+```{r n_ada_compliant_stations}
+ada_accessible_stations <- subway_data_long %>%
+  select("route_number","train","ada") %>% 
+  filter( ada == TRUE) %>%
+  distinct(route_number,train, .keep_all = TRUE) %>% 
+  na.omit %>% 
+  arrange(route_number,train)
+ada_accessible_stations
+```
 
-Reformat data so that route number and route name are distinct variables. 
-How many distinct stations serve the A train? How many are ADA compliant?
+# Station entrances/exists that without vending which allow entry.
+Instruction: "What proportion of station entrances /
+exits without vending allow entrance?"
+The original form "contains information related to each entrance and exit for each subway station in NYC."
+So, we will use this format to answer a question about entrances.
+Careful verification through subsetting for duplicate locations reveals that this is the case.
+Converting wide to long could mislead someone to thinking that there are more 
+entrances than exist in cases where the entrance services multiple routes.
+```{r ent_exit_wo_vending}
+subway_ent_exit_locations = read_csv("./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
+  janitor::clean_names()# %>% 
+  #select(c("entrance_location"))
+subway_ent_exit_locations %>% 
+  distinct()  %>% 
+  nrow()
+subway_ent_exit_locations %>% 
+  nrow()
+  #mutate(entry = recode(entry,"YES" = TRUE, "NO" = FALSE))
+# subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),] %>% arrange()
+# subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),] %>% arrange(entrance_location)
+subway_ent_exit_locations %>% filter(entrance_location %in% unlist(subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),"entrance_location"])) %>% 
+  arrange() %>% slice(7:11)
+subway_ent_exit_locations %>% filter(entrance_location %in% unlist(subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),"entrance_location"])) %>% 
+  arrange() %>% slice(5:6)
+duplicated_locations<-subway_ent_exit_locations %>% filter(duplicated(entrance_location)) %>% 
+  pull(entrance_location)
+
+subway_ent_exit_locations %>% filter(.,vending == "NO" & entry == "YES")
+```
+
+"Reformat data so that route number and route name are distinct variables. 
+How many distinct stations serve the A train? How many are ADA compliant?"
