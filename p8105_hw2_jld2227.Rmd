@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
-## Problem 1
+#### Problem 1
 Instructions(I'm choosing to include these to make it a bit easier to grade):
 "Read and clean the data; retain line, station, name, station latitude / 
 longitude, routes served, entry, vending, entrance type, and ADA compliance.
@@ -23,7 +23,7 @@ subway_data = read_csv("./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv
   mutate(entry = recode(entry,"YES" = TRUE, "NO" = FALSE))
 subway_data 
 ```
-
+###### Data description
 Instruction: "Write a short paragraph about this dataset – 
 explain briefly what variables the dataset contains, 
 describe your data cleaning steps so far,
@@ -66,7 +66,7 @@ subway_data_long %>%
   pull( train ) %>% 
   table( )
 ```
-
+####### Distinct stations
 Instruction: "Answer the following questions using these data:
 
 How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St A/B/C/D; 125st 1; 125st 4/5); the distinct function may be useful here.
@@ -87,7 +87,7 @@ nrow(subway_routes_trains)
 ```
 There happen to be `r nrow(subway_routes_trains)` distinct stations, according to the data.
 
-# Ada compliance
+####### Ada compliance
 We will create an additional variable denoting if the station ada is compliant. There can be multiple entrances, only some of which are ada compliant. As a simple rule, a station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant. 
 ```{r n_ada_compliant_stations}
 ada_accessible_stations <- subway_data_long %>%
@@ -99,7 +99,7 @@ ada_accessible_stations <- subway_data_long %>%
 ada_accessible_stations
 ```
 
-# Station entrances/exists that without vending which allow entry.
+####### Station entrances/exists that without vending which allow entry.
 Instruction: "What proportion of station entrances /
 exits without vending allow entrance?"
 The original form "contains information related to each entrance and exit for
@@ -190,4 +190,10 @@ stations where there is an accessible entrance. Assuming one entrance is
 sufficent for compliance per station, then this represents the number of
 accessible stations.
 
-# Problem 2
+#### Problem 2
+instruction: "Read and clean the Mr. Trash Wheel sheet:
+
+*specify the sheet in the Excel file and to omit columns containing notes (using the range argument and cell_cols() function)
+*use reasonable variable names
+*omit rows that do not include dumpster-specific data
+*rounds the number of sports balls to the nearest integer and converts the result to an integer variable (using as.integer)"
