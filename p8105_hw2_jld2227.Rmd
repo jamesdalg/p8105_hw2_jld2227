@@ -47,15 +47,24 @@ selecting the necessary columns, converting the column names
 into a standard format, and converting the entry variable into a logical column.
 ```{r describe}
 skimr::skim( subway_data )
-sapply(subway_data, table)
+#sapply(subway_data, table)
 subway_data %>% 
   select(starts_with( "route" )) %>%
   sapply(., table)
 ```
- Putting the wide format into long could aid analysis and can be done with a simple gather command.
+ Putting the wide format into long could aid analysis and can be done with a simple gather command. We'll also get rid of names that appear to be the same, but differ only on case. There are stations with FS and GS lines, but
+which might seem like more than one line in a single obserrvation, but they are distinct lines if one looks an MTA licensed site:
+https://moveonmap.com/nyc/lnG_GS_FS/
+If they were F and S incorrectly noted in the same row, we could consider using separate_rows() to fix that.
+We'll use the table function to show that we've now fixed the lower and upper case e.
 ```{r wide_to_long}
 subway_data_long = subway_data %>% 
-  gather(key = "route_number",value = "train",route1:route11)
+  gather(key = "route_number", value = "train", route1:route11) %>% 
+  mutate(train = tolower(train))
+subway_data_long
+subway_data_long %>% 
+  pull( train ) %>% 
+  table( )
 ```
 
 Instruction: "Answer the following questions using these data:
@@ -142,7 +151,7 @@ enterable_novend %>%
 ```
 
 The number of distinct enterable subway entrances/exits without vending is
-therefore `r enterable_novend %>% disinct() %>% nrow()`.
+therefore `r enterable_novend %>% distinct() %>% nrow()`.
 
 Instruction: "Reformat data so that route number and route name are distinct variables. 
 How many distinct stations serve the A train? How many are ADA compliant?"
@@ -154,6 +163,7 @@ I will change the name to make this clearer for the reader.
 ```{r distinct_a_stations}
 subway_data_long_a = subway_data %>% 
   gather(key = "route_number",value = "route_name",route1:route11) %>% 
+  mutate(line = tolower(line))   %>% 
   filter(route_name == "A") %>% 
   distinct(station_name,line) %>%
   arrange(station_name,line)
@@ -169,6 +179,7 @@ filter function.
 subway_data_long_ada = subway_data %>% 
   gather(key = "route_number",value = "route_name",route1:route11) %>% 
   filter(ada == TRUE) %>% 
+  mutate(line = tolower(line))   %>% 
   distinct(station_name,line) %>%
   arrange(station_name,line)
 subway_data_long_ada
@@ -178,3 +189,5 @@ It becomes clear now that there are precicsely `r nrow(subway_data_long_ada)`
 stations where there is an accessible entrance. Assuming one entrance is
 sufficent for compliance per station, then this represents the number of
 accessible stations.
+
+# Problem 2
