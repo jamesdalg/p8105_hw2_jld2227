@@ -352,19 +352,42 @@ distinct locations and counting the rows.  We find that all 50 states and the
 district of columbia are observed by the distinct count of `r n_states` and observing that all the states observed in "all_states" contain only state or DC abbreviations.
 The most observed state is `r most_observed_state`.
 The median of excellent responses in 2002 was `r median_ex_2002`.
-```{r hist}
-excellent_response_values <- brfss %>% 
+A histogram of excellent responses in 2002 is observed before.
+```{r hist_excellent}
+# excellent_response_values <- brfss %>% 
+#   filter(year == 2002) %>% 
+#   pull(excellent) %>% 
+#   na.omit() 
+#   ggplot(data = NULL,
+#          aes(x = excellent_response_values)) +
+#     geom_histogram()
+  ggplot(data = brfss %>% 
   filter(year == 2002) %>% 
-  pull(excellent) %>% 
-  na.omit() 
-  ggplot(data=NULL,
-         aes(x=excellent_response_values)) +
-    geom_histogram()
+    drop_na(excellent),
+  aes(x=excellent)) +
+    geom_histogram(binwidth = 1) +
+    xlab("Excellent Response Values")
   
 
 ```
-
-```{r }
+"Make a scatterplot showing the proportion of “Excellent” response values in New York County and Queens County (both in NY State) in each year from 2002 to 2010."
+Here's a scatterplot displaying the response values by county (denoted by the color variable), over time (years along the x axis), with the response values as a Y variable.
+A fitting line has been added, showing that Queens has been increasing the number of excellent responses over time while New York has been clearly decreasing.
+This trend is new, starting in roughly 2005-6.
+```{r scatter_excellent}
+ggplot(data = brfss %>%
+         filter(locationdesc %in%
+          c("NY - Queens County","NY - New York County") &
+            year >= 2002 &
+            year <= 2010),
+       aes(x = year,y = excellent,color = locationdesc
+           )
+) +
+  geom_point(alpha = 0.5, size = 5) + 
+  ylab("Excellent Response Values") +
+  labs(color = "county") +
+  theme_dark() +
+  geom_smooth(se = F) 
 
 ```
 
