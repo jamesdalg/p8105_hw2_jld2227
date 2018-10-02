@@ -212,9 +212,6 @@ trash_wheel_data <- readxl::read_excel(path =
     sports_balls = round(sports_balls) %>%
             as.integer()) %>% 
   as.tibble()
-  
-# trash_wheel_data[166,]
- Amelia::missmap(trash_wheel_data)
  trash_wheel_data
 ```
 instruction:"Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful)."
