@@ -214,7 +214,7 @@ trash_wheel_data <- readxl::read_excel(path =
   as.tibble()
  trash_wheel_data
 ```
-instruction:"Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful)."
+Instruction:  "Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful)."
 ```{r import_precip}
 precip_2017 <- readxl::read_excel(path = 
     "./problem2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
@@ -235,7 +235,15 @@ precip_2017_2016 <- dplyr::bind_rows(precip_2016,precip_2017) %>%
   mutate(month = month.name[month])
 
 ```
-instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?"
+instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables."
+
+Instruction: " For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?"
+The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and 
+The total precipitation in 2017 was `r precip_2017 %>% pull(tot_precip) %>% sum()` inches.
+The median number of sports balls was `r trash_wheel_data %>% pull(sports_balls) %>% median()`.
+
+
+
 # WRITE PARAGRAPH HERE WITH INLINE R.
 ```{r}
 sapply(X = trash_wheel_data, function(x) if( is.numeric(x) ) { e1071::kurtosis(x) } )
