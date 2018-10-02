@@ -47,13 +47,12 @@ selecting the necessary columns, converting the column names
 into a standard format, and converting the entry variable into a logical column.
 ```{r describe}
 skimr::skim( subway_data )
-#sapply(subway_data, table)
 subway_data %>% 
   select(starts_with( "route" )) %>%
   sapply(., table)
 ```
  Putting the wide format into long could aid analysis and can be done with a simple gather command. We'll also get rid of names that appear to be the same, but differ only on case. There are stations with FS and GS lines, but
-which might seem like more than one line in a single obserrvation, but they are distinct lines if one looks an MTA licensed site:
+which might seem like more than one line in a single observation, but they are distinct lines if one looks an MTA licensed site:
 https://moveonmap.com/nyc/lnG_GS_FS/
 If they were F and S incorrectly noted in the same row, we could consider using separate_rows() to fix that.
 We'll use the table function to show that we've now fixed the lower and upper case e.
@@ -88,7 +87,7 @@ nrow(subway_routes_trains)
 There happen to be `r nrow(subway_routes_trains)` distinct stations, according to the data.
 
 ####### Ada compliance
-We will create an additional variable denoting if the station ada is compliant. There can be multiple entrances, only some of which are ada compliant. As a simple rule, a station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant. 
+We will create an additional variable denoting if the station ada is compliant. There can be multiple entrances, only some of which are ada compliant. As a simple rule, a station is compliant if there is at least one station name/line combination with an ada compliant entrance, then it is ada compliant.
 ```{r n_ada_compliant_stations}
 ada_accessible_stations <- subway_data_long %>%
   select("route_number","train","ada") %>% 
@@ -121,20 +120,12 @@ entry criteria, then count the number of rows. Using the distinct function
 can prove again, that the rows are distinct.
 ```{r ent_exit_wo_vending}
 subway_ent_exit_locations = read_csv("./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
-  janitor::clean_names()# %>% 
-  #select(c("entrance_location"))
+  janitor::clean_names()
 subway_ent_exit_locations %>% 
   distinct()  %>% 
   nrow()
 subway_ent_exit_locations %>% 
   nrow()
-  #mutate(entry = recode(entry,"YES" = TRUE, "NO" = FALSE))
-# subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),] %>% arrange()
-# subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),] %>% arrange(entrance_location)
-# subway_ent_exit_locations %>% filter(entrance_location %in% unlist(subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),"entrance_location"])) %>% 
-#   arrange() %>% slice(7:11)
-# subway_ent_exit_locations %>% filter(entrance_location %in% unlist(subway_ent_exit_locations[duplicated(subway_ent_exit_locations$entrance_location),"entrance_location"])) %>% 
-#   arrange() %>% slice(5:6)
 duplicated_locations<-subway_ent_exit_locations %>% filter(duplicated(entrance_location)) %>% 
   pull(entrance_location)
 duplicated_locations_subset<-subway_ent_exit_locations %>% 
