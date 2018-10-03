@@ -233,18 +233,31 @@ precip_2016 <- readxl::read_excel(path =
   mutate(year = 2016)
 precip_2017_2016 <- dplyr::bind_rows(precip_2016,precip_2017) %>% 
   mutate(month = month.name[month])
-
+avg_wt_removed <- trash_wheel_data %>%
+  group_by(year) %>%
+  summarise(sum=sum(weight_tons)) %>%
+  pull(sum) %>% 
+  mean()
+homes_yr_sd <- trash_wheel_data %>%
+  group_by(year) %>%
+  summarise(sum=sum(homes_powered)) %>%
+  pull(sum) %>%  sd()
+homes_yr_mean <- trash_wheel_data %>%
+  group_by(year) %>%
+  summarise(sum=sum(homes_powered)) %>%
+  pull(sum) %>%  mean()
 ```
-instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables."
+Instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables."
+
+The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and `r nrow(precip_2017_2016)` observations in the precipitation data. The key variables might be the more reportable effects the intervention had on the environment, namely the average trash removed per year , `r avg_tons_removed`, or the postitive outcomes outside of trash removal, namely the average homes powered per year, `r homes_y_mean` along with it's minimal standard deviation `r homes_yr_sd`.  
 
 Instruction: " For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?"
-The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and 
 The total precipitation in 2017 was `r precip_2017 %>% pull(tot_precip) %>% sum()` inches.
 The median number of sports balls was `r trash_wheel_data %>% pull(sports_balls) %>% median()`.
 
 
 
-# WRITE PARAGRAPH HERE WITH INLINE R.
+
 ```{r}
 sapply(X = trash_wheel_data, function(x) if( is.numeric(x) ) { e1071::kurtosis(x) } )
 sapply(X = trash_wheel_data, function(x) if( is.numeric(x) ) { e1071::kurtosis(x) } )
