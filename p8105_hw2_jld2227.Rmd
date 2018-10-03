@@ -267,7 +267,7 @@ sapply(colnames(trash_wheel_data),function(x) if(is.numeric(trash_wheel_data[,x]
 density(trash_wheel_data$cigarette_butts) %>% plot()
 density(trash_wheel_data$grocery_bags) %>% plot()
 ```
-# Problem 3(finish the paragraph in 2)
+# Problem 3
 
 "This problem uses the BRFSS data. DO NOT include this dataset in your local data directory; instead, load the data from the  p8105.datasets package.
 
