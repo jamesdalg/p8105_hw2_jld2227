@@ -202,7 +202,7 @@ read_excel doesn't convert to a tibble, so I've chosen to do that for purposes o
 
 ```{r import_tidy_mr_trash_wheel}
 trash_wheel_data <- readxl::read_excel(path = 
-    "./problem2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+    "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
   sheet =  "Mr. Trash Wheel",
   range = readxl::cell_cols("A:N")) %>% 
   janitor::clean_names() %>% 
@@ -217,14 +217,14 @@ trash_wheel_data <- readxl::read_excel(path =
 Instruction:  "Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful)."
 ```{r import_precip}
 precip_2017 <- readxl::read_excel(path = 
-    "./problem2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+    "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
   sheet =  "2017 Precipitation",
   skip = 2, col_names = c("month", "tot_precip")) %>% 
   na.omit() %>% 
   as.tibble() %>% 
   mutate(year = 2017)
 precip_2016 <- readxl::read_excel(path = 
-    "./problem2/HealthyHarborWaterWheelTotals2017-9-26.xlsx",
+    "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
   sheet =  "2016 Precipitation", 
   skip = 2,
   col_names = c("month", "tot_precip")) %>% 
