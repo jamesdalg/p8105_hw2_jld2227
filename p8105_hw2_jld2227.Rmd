@@ -246,14 +246,20 @@ homes_yr_mean <- trash_wheel_data %>%
   group_by(year) %>%
   summarise(sum=sum(homes_powered)) %>%
   pull(sum) %>%  mean()
+prcp_17_tot <- precip_2017 %>% 
+  pull(tot_precip) %>%
+  sum()
+med_sports_balls <- trash_wheel_data %>% 
+  pull(sports_balls) %>% 
+  median()
 ```
 Instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables."
 
 The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and `r nrow(precip_2017_2016)` observations in the precipitation data. The key variables might be the more reportable effects the intervention had on the environment, namely the average trash removed per year , `r avg_wt_removed` tons, or the postitive outcomes outside of trash removal, namely the average homes powered per year, `r homes_yr_mean` homes along with it's minimal standard deviation `r homes_yr_sd` homes.  
 
 Instruction: " For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?"
-The total precipitation in 2017 was `r precip_2017 %>% pull(tot_precip) %>% sum()` inches.
-The median number of sports balls was `r trash_wheel_data %>% pull(sports_balls) %>% median()`.
+The total precipitation in 2017 was `r prcp_17_tot` inches.
+The median number of sports balls was `r med_sports_balls`.
 
 
 
