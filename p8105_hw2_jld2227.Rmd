@@ -126,7 +126,7 @@ can prove again, that the rows are distinct.
 ```{r ent_exit_wo_vending}
 subway_ent_exit_locations = read_csv(
   "./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
-  janitor::clean_names()
+  janitor::clean_names() #read data and clean names
 subway_ent_exit_locations %>% 
   distinct()  %>% 
   nrow()
@@ -139,19 +139,30 @@ duplicated_locations_subset<-subway_ent_exit_locations %>%
   filter(entrance_location %in% duplicated_locations) %>% 
   arrange()
 enterable_novend <- subway_ent_exit_locations %>% 
-  filter(.,vending == "NO" & entry == "YES") 
+  filter(.,vending == "NO" & entry == "YES") #filter the subway openings for enterable locations with vending.
 enterable_novend %>% 
-  nrow()
+  nrow() 
 n_enterable_novend <- enterable_novend %>% 
   distinct() %>% 
-  nrow()
+  nrow() #count the number of enterable locations with vending.
 enterable_novend_prop =  n_enterable_novend / nrow(subway_ent_exit_locations)
+#divide the count of the enterable locations with vending by the total number of openings
 
+n_novend <- subway_ent_exit_locations %>% 
+  filter(.,vending == "NO") %>% 
+  nrow()
+
+prop_enterable_of_novend = n_enterable_novend / n_novend
+  
 ```
 
 The number of distinct enterable subway entrances/exits without vending is
 therefore `r n_enterable_novend`. The proportion of
-such stations out of the total is `r enterable_novend_prop`
+such stations out of the total is `r enterable_novend_prop`.
+If one wants the proportion of openings that are enterable of
+all the openings without vending (another way of looking at this question):
+`r prop_enterable_of_novend`.
+
 
 Instruction: "Reformat data so that route number and route name
 are distinct variables. 
