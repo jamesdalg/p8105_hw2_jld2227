@@ -142,13 +142,16 @@ enterable_novend <- subway_ent_exit_locations %>%
   filter(.,vending == "NO" & entry == "YES") 
 enterable_novend %>% 
   nrow()
-enterable_novend %>% 
+n_enterable_novend <- enterable_novend %>% 
   distinct() %>% 
   nrow()
+enterable_novend_prop =  n_enterable_novend / nrow(subway_ent_exit_locations)
+
 ```
 
 The number of distinct enterable subway entrances/exits without vending is
-therefore `r enterable_novend %>% distinct() %>% nrow()`.
+therefore `r n_enterable_novend`. The proportion of
+such stations out of the total is `r enterable_novend_prop`
 
 Instruction: "Reformat data so that route number and route name
 are distinct variables. 
@@ -227,13 +230,17 @@ trash_wheel_data <- readxl::read_excel(path =
 Instruction:  "Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful)."
 An import of both sheets followed by a merge is done below.
 ```{r import_precip}
+#I was instructed by a TA to put in some inline comments, for ease of grading.
 precip_2017 <- readxl::read_excel(path = 
-    "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
-  sheet =  "2017 Precipitation",
+    "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
+    #This reads the excel sheet.
+  sheet =  "2017 Precipitation", #This specifies sheet
   skip = 2, col_names = c("month", "tot_precip")) %>% 
-  na.omit() %>% 
-  as.tibble() %>% 
-  mutate(year = 2017)
+  #skip rows w/o data, limit to a pair of columns
+  na.omit() %>%  #get rid of any rows containing empty cells.
+  as.tibble() %>% #This converts to tibble format
+  mutate(year = 2017) #Here, we add a year variable.
+#We follow the same steps for the 2016 dataset
 precip_2016 <- readxl::read_excel(path = 
     "./problem2/HealthyHarborWaterWheelTotals2018-7-28.xlsx",
   sheet =  "2016 Precipitation", 
@@ -242,22 +249,26 @@ precip_2016 <- readxl::read_excel(path =
   na.omit() %>% 
   as.tibble() %>% 
   mutate(year = 2016)
+#Below we combine datasets vertically.
 precip_2017_2016 <- dplyr::bind_rows(precip_2016, precip_2017) %>% 
   mutate(month = month.name[month])
-avg_wt_removed <- trash_wheel_data %>%
-  group_by(year) %>%
-  summarise(sum = sum(weight_tons)) %>%
+
+avg_wt_removed_yr <- trash_wheel_data %>% 
+  group_by(year) %>% #This converts the df to a df grouped by year.
+  summarise(sum = sum(weight_tons)) %>% 
   pull(sum) %>% 
   mean()
 homes_yr_sd <- trash_wheel_data %>%
   group_by(year) %>%
   summarise(sum = sum(homes_powered)) %>%
+  filter(year != 2014) %>% 
   pull(sum) %>%  sd()
 homes_yr_mean <- trash_wheel_data %>%
   group_by(year) %>%
   summarise(sum = sum(homes_powered)) %>%
+  filter(year != 2014) %>% 
   pull(sum) %>%  mean()
-prcp_17_tot <- precip_2017 %>% 
+prcp_16_17_tot <- precip_2017 %>% 
   pull(tot_precip) %>%
   sum()
 med_sports_balls <- trash_wheel_data %>% 
@@ -266,10 +277,10 @@ med_sports_balls <- trash_wheel_data %>%
 ```
 Instruction:"Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables."
 
-The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and `r nrow(precip_2017_2016)` observations in the precipitation data. The key variables might be the more reportable effects the intervention had on the environment, namely the average trash removed per year , `r avg_wt_removed` tons, or the postitive outcomes outside of trash removal, namely the average homes powered per year, `r homes_yr_mean` homes along with it's minimal standard deviation `r homes_yr_sd` homes.  
+The number of observations in the trash wheel data was `r nrow(trash_wheel_data)` and `r nrow(precip_2017_2016)` observations in the precipitation data. The key variables might be the more reportable effects the intervention had on the environment, namely the average trash removed per year , `r avg_wt_removed_yr` tons, or the postitive outcomes outside of trash removal, namely the average homes powered per year, `r homes_yr_mean` homes along with it's minimal standard deviation `r homes_yr_sd` homes during years where this variable has a measured value (not 2014).  
 
 Instruction: " For available data, what was the total precipitation in 2017? What was the median number of sports balls in a dumpster in 2016?"
-The total precipitation in 2017 was `r prcp_17_tot` inches.
+The total precipitation in 2017 was `r prcp_16_17_tot` inches.
 The median number of sports balls was `r med_sports_balls`.
 
 
