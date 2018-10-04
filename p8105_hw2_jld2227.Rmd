@@ -94,11 +94,17 @@ There can be multiple entrances, only some of which are ada compliant.
 As a simple rule, a station is compliant if there is at least one station 
 name/line combination with an ada compliant entrance, then it is ada compliant.
 ```{r n_ada_compliant_stations}
-ada_accessible_stations <- subway_data_long %>%
+#data is read from the dataframe in long format.
+ada_accessible_stations <- subway_data_long %>% 
+  #Colums are selected from the dataframe.
   select("route_number", "train", "ada") %>% 
+  #Those openings that are accessible are  filtered.
   filter(ada == TRUE) %>%
+  #Those that have a distinct route number and name (train) are kept.
   distinct(route_number, train, .keep_all = TRUE) %>% 
+  #Rows with missing values are omitted.
   na.omit %>% 
+  #The dataframe is sorted by route number and train.
   arrange(route_number, train)
 ada_accessible_stations
 ```
@@ -127,31 +133,37 @@ can prove again, that the rows are distinct.
 subway_ent_exit_locations = read_csv(
   "./problem1/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>%
   janitor::clean_names() #read data and clean names
+#The below gets the distinct entry and exit locations.
 subway_ent_exit_locations %>% 
   distinct()  %>% 
   nrow()
+#the below gets the total number of entry and exit locations.
 subway_ent_exit_locations %>% 
   nrow()
+#duplicated locations are listed below.
 duplicated_locations<-subway_ent_exit_locations %>%
   filter(duplicated(entrance_location)) %>% 
   pull(entrance_location)
+#duplicated stations are shown in this dataframe.
 duplicated_locations_subset<-subway_ent_exit_locations %>% 
   filter(entrance_location %in% duplicated_locations) %>% 
   arrange()
+#filter the subway openings for enterable locations with vending.
 enterable_novend <- subway_ent_exit_locations %>% 
-  filter(.,vending == "NO" & entry == "YES") #filter the subway openings for enterable locations with vending.
+  filter(.,vending == "NO" & entry == "YES") 
 enterable_novend %>% 
   nrow() 
+#count the number of enterable locations with vending.
 n_enterable_novend <- enterable_novend %>% 
   distinct() %>% 
-  nrow() #count the number of enterable locations with vending.
-enterable_novend_prop =  n_enterable_novend / nrow(subway_ent_exit_locations)
+  nrow() 
 #divide the count of the enterable locations with vending by the total number of openings
-
+enterable_novend_prop =  n_enterable_novend / nrow(subway_ent_exit_locations)
+#get the number of openings without vending.
 n_novend <- subway_ent_exit_locations %>% 
   filter(.,vending == "NO") %>% 
   nrow()
-
+#get the proportion of stations that are enterable given there is no vending.
 prop_enterable_of_novend = n_enterable_novend / n_novend
   
 ```
