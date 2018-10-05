@@ -344,14 +344,26 @@ focus on the “Overall Health” topic
 exclude variables for class, topic, question, sample size, and everything from lower confidence limit to GeoLocation
 structure data so that responses (excellent to poor) are variables taking the value of Data_value
 create a new variable showing the proportion of responses that were “Excellent” or “Very Good”"
+
+We begin by importing the dataset by pulling the dataframe out of the 
+p8105 datasets package, filtering by topic, limiting columns, and creating 
+several specific response colummns from the response. A variable for the total
+of the very good and excellent columns is created.
 ```{r brfss_import}
-brfss <- p8105.datasets::brfss_smart2010 %>% janitor::clean_names() %>% 
-  filter(topic == "Overall Health") %>% 
-  select(-class,-topic,-question,-sample_size,-(confidence_limit_low:geo_location)) %>% 
-    spread(key = response,value=data_value) %>%
+brfss <- p8105.datasets::brfss_smart2010 %>% #Pulls dataframe out of package.
+  janitor::clean_names() %>%  #Converts to snake case.
+  filter(topic == "Overall Health") %>%  #Filters by overall health topoc.
+  select(-class,-topic,-question,-sample_size,
+         -(confidence_limit_low:geo_location)) %>% 
+  #retains only needed columns
+    spread(key = response,value=data_value) %>% 
+  #converts the format to wide (resulting in the excellent and very good columns.
    janitor::clean_names() %>%
-  mutate(ex_very_good = excellent + very_good)
-brfss  
+  #Cleans names again, which is necessary as new columns were created.
+  mutate(proportion_ex_very_good = excellent + very_good / (excellent + fair + good + poor + very_good) ) #adds a column for the sum
+#of the excellent and very good columns.
+brfss %>%
+  pull(proportion_ex_very_good)  #displays the resulting tibble.
 ```
 
 Instruction: "Using this dataset, do or answer the following:
@@ -363,7 +375,10 @@ In 2002, what is the median of the “Excellent” response value?
 Make a histogram of “Excellent” response values in the year 2002.
 Make a scatterplot showing the proportion of “Excellent” response values in New York County and Queens County (both in NY State) in each year from 2002 to 2010."
 ###### Number of unique locations in dataset
-
+The number of unique locations is obtained by selecting the locationdesc variable
+(containing locations more specific than state abbreviations) from the brfss dataset, filtering using
+the distinct command and calculating the number of rows in the single column 
+dataframe of locations.
 ```{r unique_locs}
 unique_locations <- brfss %>%
   select( locationdesc ) %>%
@@ -371,6 +386,9 @@ unique_locations <- brfss %>%
   nrow()
 unique_locations
 ```
+The states are obtained identically, with the exception that the locationabbr
+column is used. If the frequency is desired, one can utilize the table command
+to obtain counts of each unique locationabbr (state).
 ```{r states}
 n_states <- brfss %>%
   select( locationabbr ) %>%
@@ -383,6 +401,11 @@ all_states <- brfss %>%
   table() %>% 
   names()
 all_states
+```
+The most observed state can be obtained by sorting the table output with
+counts of each state in a decreasing order and obtaining the first five of them
+with the head() function.
+```{r most_observed_state}
 most_observed_states <- brfss %>% 
   select( locationabbr ) %>% 
   table() %>% 
@@ -393,6 +416,10 @@ most_observed_state <- most_observed_states %>%
   names() %>% .[1]
 most_observed_state
 ```
+To obtain the median value of excellent responses, filtering by year for 2002
+happens from the wide-format data (created earlier with spread) and the excellent
+column is pulled, NA values removed, and the median value obtained from the
+column vector.
 ```{r median_ex_2002}
 median_ex_2002  <- brfss %>% 
   filter(year == 2002) %>% 
@@ -407,19 +434,14 @@ The most observed state is `r most_observed_state`.
 The median of excellent responses in 2002 was `r median_ex_2002`.
 A histogram of excellent responses in 2002 is observed before.
 ```{r hist_excellent}
-# excellent_response_values <- brfss %>% 
-#   filter(year == 2002) %>% 
-#   pull(excellent) %>% 
-#   na.omit() 
-#   ggplot(data = NULL,
-#          aes(x = excellent_response_values)) +
-#     geom_histogram()
+
   ggplot(data = brfss %>% 
   filter(year == 2002) %>% 
     drop_na(excellent),
-  aes(x=excellent)) +
-    geom_histogram(binwidth = 1) +
-    xlab("Excellent Response Values")
+  aes(x=excellent,fill = very_good,color=poor)) +
+    geom_histogram(alpha=0.5, binwidth = 1) +
+    xlab("Excellent Response Values") + ylab("frequency")
+ scale_color_hue()
   
 
 ```
