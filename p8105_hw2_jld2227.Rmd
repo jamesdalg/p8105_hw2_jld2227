@@ -434,16 +434,14 @@ The most observed state is `r most_observed_state`.
 The median of excellent responses in 2002 was `r median_ex_2002`.
 A histogram of excellent responses in 2002 is observed before.
 ```{r hist_excellent}
-
-  ggplot(data = brfss %>% 
+excel_hist <- brfss %>% 
   filter(year == 2002) %>% 
-    drop_na(excellent),
-  aes(x=excellent,fill = very_good,color=poor)) +
-    geom_histogram(alpha=0.5, binwidth = 1) +
-    xlab("Excellent Response Values") + ylab("frequency")
- scale_color_hue()
-  
-
+    drop_na(excellent) %>%   ggplot(data = .,
+  aes(x = excellent)) +
+    geom_histogram(alpha = 0.5, binwidth = 1, fill = "red") +
+    xlab("Excellent Response Values") +
+  ylab("frequency") 
+print(excel_hist)
 ```
 "Make a scatterplot showing the proportion of “Excellent” response values in New York County and Queens County (both in NY State) in each year from 2002 to 2010."
 Here's a scatterplot displaying the response values by county (denoted by the color variable), over time (years along the x axis), with the response values as a Y variable.
