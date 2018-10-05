@@ -333,7 +333,7 @@ The median number of sports balls was `r med_sports_balls`.
 
 
 
-# Problem 3
+#### Problem 3
 
 "This problem uses the BRFSS data. DO NOT include this dataset in your local data directory; instead, load the data from the  p8105.datasets package.
 
